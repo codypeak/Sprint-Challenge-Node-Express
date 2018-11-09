@@ -31,9 +31,9 @@ server.get('/actions/:id', (req, res) => {
 })
 
 server.post('/actions', (req, res) => {
-    const { type } = req.body;  //naming convention?
+    const { notes, description, project_id } = req.body;  
     actions
-        .insert({ type })
+        .insert({ notes, description, project_id })
         .then( response => {
             res.status(200).json(response);
         })
@@ -66,7 +66,7 @@ server.delete('/actions/:id', (req, res) => {
     actions
         .remove(id)
         .then(count => {
-            res.status(200).json(count);
+            res.status(200).json(count);  //count????
         })
         .catch(error => {
             res.status(500).json({ message: "Server Error" });
@@ -82,12 +82,23 @@ server.get('/projects', (req, res) => {
         })
         .catch(error => {
             res.status(500).json({ message: "Server Error" });
-})
+});
 
 server.get('/projects/:id', (req, res) => {
+    const { id } = req.params;
+    projects
+        .get(id)
+        .then(project => {
+            res.status(200).json(project);
+        })
+        .catch(error => {
+            res.status(500).json({ message: "Server Error" });
+});
+
+server.get('/projects/:id', (req, res) => {  //projects/actions?
     const { projectId } = req.params;
     projects
-        .get(projectId)
+        .getProjectActions(projectId)
         .then(projectActions => {
             res.status(200).json(projectActions)
         })
@@ -96,5 +107,48 @@ server.get('/projects/:id', (req, res) => {
         })
 });
 
+server.post('/projects', (req, res) => {
+    const { name, description } = req.params;
+    projects
+        .insert({ name, description })
+        .then(project => {
+            res.status(200).json(project);
+        })
+        .catch(error => {
+            res.status(500).json({ message: "Server Error" });
+        })
+});
 
-server.listen(port, () => console.log(`API running on port ${port}`));
+server.put('/projects/:id', (req, res) => {
+    const { id } = req.params;
+    const {changes } = req.body;
+    projects
+        .update(id, { changes })
+        .then(response => {
+            if (response === 0) {
+                res.status(404).send(null);
+            } else {
+                projects.find(id).then(project => {   // something.find????
+                    res.status(200).json(project);
+                })
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ message: "Server Error" });
+        })
+});
+
+server.delete('/projects/:id', (req, res) => {
+    const { id } = req.params;
+    projects
+        .remove(id)
+        .then(count => {
+            res.status(200).json(count);
+        })
+        .catch(error => {
+            res.status(500).json({ message: "Server Error" });
+        })
+})
+
+
+server.listen(port, () => console.log(`API running on port ${port}`));  //what error??????
