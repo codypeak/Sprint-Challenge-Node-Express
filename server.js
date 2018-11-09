@@ -6,7 +6,6 @@ const projects = require('./data/helpers/projectModel');
 const server = express();
 server.use(express.json());
 
-server.get('/ping', (req, resp) => resp.status(200).json('pong'))
 
 //ACTION ENDPOINTS
 server.get('/actions', (req, res) => {
@@ -113,7 +112,7 @@ server.get('/projects/:id', (req, res) => {  //projects/actions?
 server.post('/projects', (req, res) => {
     const { name, description } = req.body;
     projects
-        .insert({ name, description })
+        .insert({ name, description})
         .then(project => {
             res.status(200).json(project);
         })
