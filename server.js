@@ -1,10 +1,12 @@
 const express = require('express');
 const port = 8000;
-const actions = require('../data/helpers/actionModel');
-const projects = require('../data/helpers/projectModel');
+const actions = require('./data/helpers/actionModel');
+const projects = require('./data/helpers/projectModel');
 
 const server = express();
 server.use(express.json());
+
+server.get('/ping', (req, resp) => resp.status(200).json('pong'))
 
 //ACTION ENDPOINTS
 server.get('/actions', (req, res) => {
@@ -44,20 +46,18 @@ server.post('/actions', (req, res) => {
 
 server.put('/actions/:id', (req, res) => {
     const { id } = req.params;
-    const { changes } = req.body;
+    const changes = req.body;
     actions
-        .update(id, {changes} )  //both dynamic? 
-        .then(response => {
-            if (response === 0) {
-                res.status(404).send(null);  //???????
+        .update(id, changes) 
+        .then(action => {
+            if (action) {
+                res.status(200).json(action)
             } else {
-                actions.find(id).then(action => {   //actions.find or something.find????
-                    res.status(200).json(action);
-                })
+                res.status(404).send(null);
             }
         })
         .catch(error => {
-            res.status(500).json({ message: "Server Error" });
+            res.status(500).json({ message: "Server Error" + error});
         })
 })
 
@@ -70,6 +70,7 @@ server.delete('/actions/:id', (req, res) => {
         })
         .catch(error => {
             res.status(500).json({ message: "Server Error" });
+        })
 })
 
 
@@ -82,6 +83,7 @@ server.get('/projects', (req, res) => {
         })
         .catch(error => {
             res.status(500).json({ message: "Server Error" });
+        })
 });
 
 server.get('/projects/:id', (req, res) => {
@@ -93,6 +95,7 @@ server.get('/projects/:id', (req, res) => {
         })
         .catch(error => {
             res.status(500).json({ message: "Server Error" });
+        })
 });
 
 server.get('/projects/:id', (req, res) => {  //projects/actions?
@@ -108,7 +111,7 @@ server.get('/projects/:id', (req, res) => {  //projects/actions?
 });
 
 server.post('/projects', (req, res) => {
-    const { name, description } = req.params;
+    const { name, description } = req.body;
     projects
         .insert({ name, description })
         .then(project => {
@@ -121,16 +124,14 @@ server.post('/projects', (req, res) => {
 
 server.put('/projects/:id', (req, res) => {
     const { id } = req.params;
-    const {changes } = req.body;
+    const changes = req.body;
     projects
-        .update(id, { changes })
-        .then(response => {
-            if (response === 0) {
-                res.status(404).send(null);
+        .update(id, changes )
+        .then(project => {
+            if (project) {
+                res.status(200).json(project);
             } else {
-                projects.find(id).then(project => {   // something.find????
-                    res.status(200).json(project);
-                })
+                res.status(404).send(null);
             }
         })
         .catch(error => {
@@ -151,4 +152,4 @@ server.delete('/projects/:id', (req, res) => {
 })
 
 
-server.listen(port, () => console.log(`API running on port ${port}`));  //what error??????
+server.listen(port, () => console.log(`API running on port ${port}`))
