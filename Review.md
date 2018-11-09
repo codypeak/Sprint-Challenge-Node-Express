@@ -8,7 +8,7 @@
 
 ## What is Middleware?  software that acts as a bridge between a database or os and applications that extends functionality.
 
-## What is a Resource?  resources are intuitive subjects/categories that can help a developer organize and generate restful routes. 
+## What is a Resource?  resources are information stored in the database that can be used for promises. 
 
 ## What can the API return to help clients know if a request was successful?  HTTP status codes in the 200 range, like 200 and 201. 
 
